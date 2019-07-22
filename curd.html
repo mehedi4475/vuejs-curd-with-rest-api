@@ -18,7 +18,7 @@
               <td>{{ note.content }}</td>
               <td>{{ note.createdAt }}</td>
               <td>{{ note.updatedAt }}</td>
-              <td><button type="buton" v-on:click="updateNote(index)" class="btn btn-info" data-toggle="modal" data-target="#updateNoteModel">Edit</button></td>
+              <td><button type="buton" v-on:click="updateNote(note.id)" class="btn btn-info" data-toggle="modal" data-target="#updateNoteModel">Edit</button></td>
               <td><button type="buton" v-on:click="deleteNote(index)" class="btn btn-danger" data-toggle="modal" data-target="#deleteNote">Delete</button></td>
           </tr>
       </table>    
@@ -59,18 +59,27 @@
             },
             methods:{
                 addNote:function(){
-                    axios.post(' http://localhost:3000/notes/', {
+                    axios.post('http://localhost:1337/notes', {
                         title: this.title,
                         content: this.content
                       }).then((response) => {
                         this.notes.push(response.data)
+                        this.title = ""
+                        this.content = ""
                     })
-                      .catch((e) => {
+                    .catch((e) => {
                         console.error(e)
-                      })
+                    })
                 },
                 updateNote:function(index){
-                    
+                    axios.get('http://localhost:1337/notes/' + index)
+                        .then((response) => {
+                        this.title = response.data.title
+                        this.content = response.data.content
+                    })
+                    .catch((e) => {
+                        console.error(e)
+                    })
                 },
                 
                 deleteNote:function(index){
@@ -79,7 +88,7 @@
                 
             },
             mounted(){
-                axios.get('http://localhost:3000/notes/')
+                axios.get('http://localhost:1337/notes')
                 .then(response => (this.notes = response.data))
             }
         });
